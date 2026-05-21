@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "swarm-coder"
+version = "0.1.0"
+description = "A swarm of agents for collaborative coding."
+authors = [
+    { name = "Rohit" }
+]
+dependencies = [
+    "google-adk",
+    "pydantic",
+    "python-dotenv",
+    "rich",
+    "requests"
+]
+requires-python = ">=3.10"
+
+[project.scripts]
+swarm-coder = "src.swarm_coder.cli.main:async_main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["swarm_coder*"]

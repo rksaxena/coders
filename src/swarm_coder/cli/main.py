@@ -3,8 +3,8 @@ import sys
 from dotenv import load_dotenv
 from google.adk.sessions import InMemorySessionService
 
-from src.swarm_coder.cli.workspace import setup_workspace, load_or_resume_plan, save_plan
-from src.swarm_coder.cli.phases import run_planning_phase, run_execution_phase, run_reviewer_phase
+from src.swarm_coder.cli.workspace import setup_workspace, load_or_resume_plan
+from src.swarm_coder.cli.phases import run_planning_phase, run_execution_phase
 from src.swarm_coder.core.timing import profiler
 
 # Load environment variables from .env file
@@ -42,6 +42,8 @@ async def async_main() -> None:
         if not plan:
             return
 
+    await run_execution_phase(workspace_path, plan, session_service)
+    """
     while plan:
         has_pending_tasks = any(not task.completed for task in plan.tasks)
         if has_pending_tasks:
@@ -53,5 +55,5 @@ async def async_main() -> None:
             save_plan(workspace_path, plan)
         else:
             break
-    
+    """
     print(profiler.generate_report())

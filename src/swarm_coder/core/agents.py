@@ -26,7 +26,7 @@ def get_planner_agent() -> adk.Agent:
     
     planner = adk.Agent(
         name="PlannerAgent",
-        model=Gemini(model="gemini-3.5-flash"),
+        model=Gemini(model="gemini-2.5-flash"),
         instruction=instructions,
         tools=[read_file_content, list_files],
         output_schema=ImplementationPlan

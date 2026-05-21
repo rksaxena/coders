@@ -14,7 +14,6 @@ This project implements an advanced AI-driven Planner Agent that acts as a cogni
 - **Cloud LLM:** Google Gemini API
 - **Local LLM:** Ollama (e.g., Llama 3, Mistral, etc.)
 - **Environment Management:** `dotenv`
-- *(Add your core programming language and framework here, e.g., Python, LangChain, Node.js)*
 
 ## Prerequisites
 

@@ -1,23 +1,34 @@
-# Planner Agent Project
+# Swarm Coder
 
-This project implements an advanced AI-driven Planner Agent that acts as a cognitive orchestrator. It integrates with both the Google Gemini API (for complex reasoning and high-level planning) and a local Ollama instance (for secure, local task execution) to execute tasks, manage workflows, and handle code or language generation autonomously.
+This project implements an advanced AI-driven **Swarm Coder** framework designed to autonomously rewrite, modify, and extend codebases. It relies on a hybrid LLM approach, balancing high-level cognitive reasoning in the cloud (via Google Gemini) with secure, fast, and context-aware execution on your local machine (via Ollama).
 
 ## Features
 
-- **Intelligent Task Planning:** Leverages Gemini's advanced reasoning to break down complex user prompts into actionable steps.
-- **Local LLM Execution:** Integrates with Ollama to run lightweight, open-source models locally, ensuring data privacy for sensitive sub-tasks.
-- **Dynamic Workflow Management:** Automatically routes tasks between the cloud (Gemini) and local environments (Ollama) depending on task requirements and context.
-- **Extensible Architecture:** Designed so you can easily plug in new tools, APIs, or alternative LLM backends.
+- **Hybrid Orchestration:** Uses the Google Agent Development Kit (`google-adk`) to route complex reasoning to the cloud and sensitive code-generation to local models.
+- **Intelligent Task Planning:** The Planner Agent (Gemini) analyzes requirements and breaks them down into strict JSON `TaskBlueprint` contracts.
+- **Local Swarm Workers:** The Coder Agent executes granular tasks entirely locally using models like `qwen2.5-coder`, ensuring maximum token efficiency and privacy.
+- **Local RAG & Context:** Incorporates `LanceDB` to dynamically chunk and semantically index your workspace, allowing the swarm to retrieve precise code snippets without blowing up the context window.
+- **Phased Execution Workflow:** Moves systematically through Planning, Execution, and Review phases, supporting automated fixes and user approval gates.
 
 ## Tech Stack
 
-- **Cloud LLM:** Google Gemini API
-- **Local LLM:** Ollama (e.g., Llama 3, Mistral, etc.)
-- **Environment Management:** `dotenv`
+- **Orchestration:** `google-adk`
+- **Cloud LLM (Planner):** Google Gemini API (Gemini 2.5 Flash / Pro)
+- **Local LLM (Coder):** Ollama (e.g., `qwen2.5-coder:7b`, `nomic-embed-text`)
+- **Vector Storage:** `LanceDB` & `PyArrow`
+- **Language:** Python 3.10+
+
+## Architecture Overview
+
+1. **Cloud Planning Layer:** The Planner Agent acts as the Architect. It reviews your intent and outputs an `OrchestratorPlan` mapping multiple sequential or parallel `FileTask` actions.
+2. **Local Control Plane:** Maintains an in-memory ledger (`StateTracker`) of active tasks and a lightweight vector index (`LanceDB`) for semantic workspace search.
+3. **Local Swarm Execution:** Tasks are iteratively delegated to local Coder Agents, which stream modifications directly to the file system.
+4. **Review & Validation:** A Reviewer Phase checks the implemented code against the original tasks, proposing new plans for missed edge cases or bugs.
 
 ## Prerequisites
 
-- [Ollama](https://ollama.com/) installed locally (if you plan to use local models).
+- Ollama installed locally and running.
+- Necessary local models pulled: `ollama pull qwen2.5-coder:7b` and `ollama pull nomic-embed-text`.
 - A valid [Google Gemini API Key](https://aistudio.google.com/).
 
 ## Setup and Installation
@@ -37,19 +48,22 @@ This project implements an advanced AI-driven Planner Agent that acts as a cogni
    ```
 
 3. **Update `.env`:**
-   Open the newly created `.env` file and fill in your specific configuration:
    - `GEMINI_API_KEY`: Enter your Gemini API key for the Planner Agent.
-   - `OLLAMA_API_BASE`: (Optional) The base URL for your local Ollama instance. Defaults to `http://localhost:11434`.
+   - `OLLAMA_API_BASE`: (Optional) Base URL for your local Ollama instance (Defaults to `http://localhost:11434`).
+   - `OLLAMA_MODEL`: (Optional) Overrides the local model used for code execution.
+
+4. **Install Dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   # Ensure vector search dependencies are installed:
+   pip install lancedb pyarrow aiohttp
+   ```
 
 ## Usage
 
-To start the Planner Agent, run the main entry point of the application. *(Example below assumes a Python environment)*:
+To start Swarm Coder, run the main entry point of the application:
 
 ```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Run the agent
 python main.py
 ```
 

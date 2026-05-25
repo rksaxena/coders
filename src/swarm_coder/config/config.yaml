@@ -2,12 +2,18 @@
 
 models:
   planner: 
-    - name: "gemini-2.5-flash"
+    - name: "gemma-4-31b-it"
       type: "cloud"
       priority: 0
+    - name: "gemini-2.5-flash"
+      type: "cloud"
+      priority: 1
+    - name: "gemini-3.5-flash"
+      type: "cloud"
+      priority: 2
     - name: "gemma4:26b"
       type: "local"
-      priority: 1
+      priority: 3
   coder: 
     - name: "ollama/qwen2.5-coder:7b"
       type: "local"

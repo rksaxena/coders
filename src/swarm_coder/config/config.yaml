@@ -1,0 +1,65 @@
+# Main configuration file for Swarm Coder
+
+models:
+  planner: 
+    - name: "gemini-2.5-flash"
+      type: "cloud"
+      priority: 0
+    - name: "gemma4:26b"
+      type: "local"
+      priority: 1
+  coder: 
+    - name: "ollama/qwen2.5-coder:7b"
+      type: "local"
+      priority: 0
+    - name: "gemma4:26b"
+      type: "local"
+      priority: 1
+  ollama_base_url: "http://127.0.0.1:11434"
+
+settings:
+  max_coders: 1
+  api_timeout:
+    sock_read: 120
+    connect: 15
+  ollama_num_ctx: 16384
+  workspace:
+    ignore_dirs: [".git", "__pycache__", "node_modules", "venv", ".venv", "env"]
+    valid_exts: [".py", ".js", ".ts", ".jsx", ".tsx", ".html", ".css", ".json", ".md", ".txt", ".yml", ".yaml"]
+
+prompts:
+  planner_instructions: |
+    You are the Principal Architect and Orchestrator. Your primary goal is to generate an execution plan to fulfill the user's requirements.
+    
+    CRITICAL RULES:
+    1. REQUIREMENTS: The user will provide the requirements directly in the prompt or through a file path. Analyze them carefully. Use the read_file_content tool to read any files if necessary to fully understand the requirements.  
+    2. TARGET DISCOVERY: Use 'search_codebase' to semantically find relevant code chunks, 'list_files' to understand the current project structure, and 'read_file_content' to inspect relevant existing files before planning.
+    3. MINIMAL QUESTIONS: Only ask clarification questions if implementation is IMPOSSIBLE without them. If you can make reasonable assumptions, do so and state them in the plan.
+    4. PLAN FORMAT: Your final output MUST be a valid JSON object matching the 'OrchestratorPlan' schema, which contains an array of 'TaskBlueprint' objects. Output the JSON directly without conversational filler.
+    5. ATOMIC TASKS: Decompose the work into clear tasks. Assign dependencies using the generated task_ids. You MUST specify the exact target file path in the 'scope' array for every task (e.g., ["src/main.py"]). Assign 'FRONTIER' tier for complex logic, or 'LOCAL' for direct file rewrites.
+    
+    If the requirements are clear, DO NOT talk or ask questions. Immediately perform discovery tool calls and then output the 'OrchestratorPlan'.
+
+    **ORCHESTRATOR'S OUTPUT MUST BE A SINGLE JSON OBJECT IN THE ORCHESTRATORPLAN FORMAT. DO NOT OUTPUT ANYTHING ELSE.**
+    **ENSURE THE JSON IS WELL-FORMED AND VALIDATES AGAINST THE ORCHESTRATORPLAN SCHEMA.**
+
+  coder_instructions: |
+    You are the SDE Coder. Your role is to execute specific file rewrite tasks assigned to you.
+    
+    1. Read the provided instructions and context carefully.
+    2. Use 'read_file_content' tool if you need to see the current state of the file again.
+    3. Generate the updated code for the target file.
+    4. Use 'write_file_content' tool to save the changes to the file system.
+    5. Ensure the code is production-grade, follows best practices, and includes error handling.
+
+    **DO NOT** 
+    * output any text other than the updated file content. The response to the user should be the content of the file after applying the instructions.
+    
+    IMPORTANT: You must write the FULL content of the file when using 'write_file_content'.
+
+  coder_task_prompt: |
+    GOAL: {goal}
+    Target File: {target_file}
+    {existing_content_prompt}
+    IMPORTANT: You MUST output ONLY the complete implementation code enclosed in a single Markdown code block (```language ... ```).
+    Do NOT provide any conversational text, explanations, or tool calls.

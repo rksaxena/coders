@@ -3,3 +3,8 @@ requests
 pydantic
 python-dotenv
 rich
+pytest
+lancedb
+pyarrow
+aiohttp
+tantivy

@@ -24,3 +24,16 @@ swarm-coder = "src.swarm_coder.cli.main:async_main"
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["swarm_coder*"]
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "."
+]
+
+[tool.black]
+line-length = 88
+
+[tool.ruff.lint]
+# E and F = Default rules (Flake8 syntax and error checks)
+# PL = Activates all Pylint-equivalent rules (Refactor, Convention, Error, Warning)
+select = ["E", "F", "PL"]
